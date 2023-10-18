@@ -301,7 +301,7 @@ namespace _2021.Days.Day17
         }
 
         [TestMethod]
-        public void TestOperation()
+        public void TestPart1Operation()
         {
             var input = new List<string>()
             {
@@ -330,6 +330,31 @@ namespace _2021.Days.Day17
             var num = _d.GetMagnitude(res);
             Assert.AreEqual(4140, num);
         }
+
+        [TestMethod]
+        public void TestLargestMagnitude()
+        {
+            var input = new List<string>()
+            {
+                "[[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]",
+                "[[[5,[2,8]],4],[5,[[9,9],0]]]",
+                "[6,[[[6,2],[5,6]],[[7,6],[4,7]]]]",
+                "[[[6,[0,7]],[0,9]],[4,[9,[9,0]]]]",
+                "[[[7,[6,4]],[3,[1,3]]],[[[5,5],1],9]]",
+                "[[6,[[7,3],[3,2]]],[[[3,8],[5,7]],4]]",
+                "[[[[5,4],[7,7]],8],[[8,3],8]]",
+                "[[9,3],[[9,9],[6,[4,9]]]]",
+                "[[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]",
+                "[[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]"
+            };
+            var list = input.Select(x =>
+            {
+                var (n, _) = _d.ConvertToSnailfish(x);
+                return n;
+            }).ToArray();
+            var res = _d.FindLargestMagnitude(list);
+            Assert.AreEqual(3993, res);
+        }
     }
     
     public class Day17
@@ -348,10 +373,14 @@ namespace _2021.Days.Day17
             {
                 var (n, _) = ConvertToSnailfish(x);
                 return n;
-            }).ToArray();
-            var res = DoSnailfishAddition(list);
+            });
+            
+            var res = DoSnailfishAddition(list.ToArray());
             var num = GetMagnitude(res);
-            Console.WriteLine($"part 1: {num}");
+            Console.WriteLine($"Magnitude of number: {num}");
+
+            var largest = FindLargestMagnitude(list.ToArray());
+            Console.WriteLine($"Largest magnitude of two numbers: {largest}");
         }
 
         public static string ConvertToJson(SnailfishNumber num)
@@ -624,6 +653,27 @@ namespace _2021.Days.Day17
             }
 
             throw new Exception("No magnitudes!");
+        }
+
+        public int FindLargestMagnitude(SnailfishNumber[] values)
+        {
+            var largest = 0;
+            for (var i = values.Length - 1; i > 0; i--)
+            {
+                for (var j = i - 1; j >= 0; j--)
+                {
+                    var s1 = DoSnailfishAddition(new SnailfishNumber[] { values[i].Clone(), values[j].Clone() });
+                    var v1 = GetMagnitude(s1);
+
+                    var s2 = DoSnailfishAddition(new SnailfishNumber[] { values[j].Clone(), values[i].Clone() });
+                    var v2 = GetMagnitude(s2);
+
+                    var larger = v1 > v2 ? v1 : v2;
+                    if (larger > largest) largest = larger;
+                }
+            }
+
+            return largest;
         }
     }
 }

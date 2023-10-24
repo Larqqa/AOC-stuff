@@ -99,30 +99,57 @@
             return this;
         }
 
-        public void CompareToScanner(Scanner compare)
+        public bool CompareToScanner(Scanner compare)
         {
-            List<Beacon> matches;
-            foreach(var b in compare.Beacons)
+            Dictionary<string, int> matches;
+            foreach (var rotation in ROTATIONS)
             {
-                matches = new List<Beacon>();
-                var loc = b.Location;
+                matches = new Dictionary<string, int>();
+                this.TransformDegrees = rotation;
+                RotateScanner(this.TransformDegrees);
 
-                foreach(var rotation in ROTATIONS)
+                foreach (var b in compare.Beacons)
                 {
-                    this.TransformDegrees = rotation;
-                    RotateScanner(this.TransformDegrees);
-
                     foreach (var beacon in Beacons)
                     {
-                        if (beacon.TransposedLocation.Equals(loc))
+                        var x = b.TransposedLocation.X - beacon.TransposedLocation.X;
+                        var y = b.TransposedLocation.Y - beacon.TransposedLocation.Y;
+                        var z = b.TransposedLocation.Z - beacon.TransposedLocation.Z;
+                        var sLoc = $"{x},{y},{z}";
+
+                        if (matches.ContainsKey(sLoc))
                         {
-                            matches.Add(beacon);
+                            matches[sLoc] += 1;
+                        }
+                        else
+                        {
+                            matches.Add(sLoc, 1);
                         }
                     }
 
-                    if (matches.Count == 12) break; // 12 is target
+                    // 12 is target for correct matching rotation
+                    var m = matches.Where(x => x.Value == 12);
+                    if (m.Count() == 1)
+                    {
+                        var sLoc = m.FirstOrDefault().Key.Split(',');
+                        var x = int.Parse(sLoc[0]) + compare.Location.X;
+                        var y = int.Parse(sLoc[1]) + compare.Location.Y;
+                        var z = int.Parse(sLoc[2]) + compare.Location.Z;
+                        this.Location = new Point(x, y, z);
+                        return true;
+                    }
                 }
             }
+            return false;
+        }
+
+        public int GetManhattanDistance(Scanner compare)
+        {
+            var x = Math.Abs(this.Location.X - compare.Location.X);
+            var y = Math.Abs(this.Location.Y - compare.Location.Y);
+            var z = Math.Abs(this.Location.Z - compare.Location.Z);
+
+            return x + y + z;
         }
     }
 
@@ -137,7 +164,7 @@
         }
     }
 
-    public class Point
+    public class Point : IEquatable<Point>
     {
         public int X { get; set; }
         public int Y { get; set; }
@@ -158,6 +185,29 @@
                 int.Parse(coords[1]),
                 int.Parse(coords[2])
             );
+        }
+
+        public override string ToString()
+        {
+            return $"({X},{Y},{Z})";
+        }
+
+        public override bool Equals(Object? obj)
+        {
+            var p = obj as Point;
+            if (p == null) return false;
+            return Equals(p);
+        }
+
+        public bool Equals(Point? p)
+        {
+            if (p == null) return false;
+            return this.X == p.X && this.Y == p.Y && this.Z == p.Z;
+        }
+
+        public override int GetHashCode()
+        {
+            return X + Y + Z;
         }
     }
 }

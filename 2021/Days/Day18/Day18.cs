@@ -2,12 +2,12 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace _2021.Days.Day17
+namespace _2021.Days.Day18
 {
     [TestClass]
-    public class Day17Tests
+    public class Day18Tests
     {
-        readonly Day17 _d = new();
+        readonly Day18 _d = new();
 
         [TestMethod]
         public void TestParsing()
@@ -15,28 +15,28 @@ namespace _2021.Days.Day17
             {
                 var input = "[1,2]";
                 var (num, _) = _d.ConvertToSnailfish(input);
-                var output = Day17.ConvertToJson(num);
+                var output = Day18.ConvertToJson(num);
                 var expect = "{\"LeftNumber\":1,\"RightNumber\":2,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}";
                 Assert.AreEqual(expect, output);
             }
             {
                 var input = "[[1,2],[3,4]]";
                 var (num, _) = _d.ConvertToSnailfish(input);
-                var output = Day17.ConvertToJson(num);
+                var output = Day18.ConvertToJson(num);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":1,\"RightNumber\":2,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":3,\"RightNumber\":4,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}";
                 Assert.AreEqual(expect, output);
             }
             {
                 var input = "[[1,2],[[3,4],5]]";
                 var (num, _) = _d.ConvertToSnailfish(input);
-                var output = Day17.ConvertToJson(num);
+                var output = Day18.ConvertToJson(num);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":1,\"RightNumber\":2,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":5,\"LeftSnailfishNumber\":{\"LeftNumber\":3,\"RightNumber\":4,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":null}}";
                 Assert.AreEqual(expect, output);
             }
             {
                 var input = "[[1,[[3,4],5]],2]";
                 var (num, _) = _d.ConvertToSnailfish(input);
-                var output = Day17.ConvertToJson(num);
+                var output = Day18.ConvertToJson(num);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":2,\"LeftSnailfishNumber\":{\"LeftNumber\":1,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":5,\"LeftSnailfishNumber\":{\"LeftNumber\":3,\"RightNumber\":4,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":null}";
                 Assert.AreEqual(expect, output);
             }
@@ -49,7 +49,7 @@ namespace _2021.Days.Day17
                 var input = "[[[[[9, 8],1],2],3],4]";
                 var (num, _) = _d.ConvertToSnailfish(input);
                 var (n, _, _, _) = _d.ExplodeSnailfish(num);
-                var output = Day17.ConvertToJson(n);
+                var output = Day18.ConvertToJson(n);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":4,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":3,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":2,\"LeftSnailfishNumber\":{\"LeftNumber\":0,\"RightNumber\":9,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":null}";
                 Assert.AreEqual(expect, output);
             }
@@ -57,7 +57,7 @@ namespace _2021.Days.Day17
                 var input = "[7,[6,[5,[4,[3,2]]]]]";
                 var (num, _) = _d.ConvertToSnailfish(input);
                 var (n, _, _, _) = _d.ExplodeSnailfish(num);
-                var output = Day17.ConvertToJson(n);
+                var output = Day18.ConvertToJson(n);
                 var expect = "{\"LeftNumber\":7,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":6,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":5,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":7,\"RightNumber\":0,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}}}";
                 Assert.AreEqual(expect, output);
             }
@@ -65,7 +65,7 @@ namespace _2021.Days.Day17
                 var input = "[[6,[5,[4,[3,2]]]],1]";
                 var (num, _) = _d.ConvertToSnailfish(input);
                 var (n, _, _, _) = _d.ExplodeSnailfish(num);
-                var output = Day17.ConvertToJson(n);
+                var output = Day18.ConvertToJson(n);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":3,\"LeftSnailfishNumber\":{\"LeftNumber\":6,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":5,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":7,\"RightNumber\":0,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}},\"RightSnailfishNumber\":null}";
                 Assert.AreEqual(expect, output);
             }
@@ -73,7 +73,7 @@ namespace _2021.Days.Day17
                 var input = "[[0,0],[[[[1,1],0],0],0]]";
                 var (num, _) = _d.ConvertToSnailfish(input);
                 var (n, _, _, _) = _d.ExplodeSnailfish(num);
-                var output = Day17.ConvertToJson(n);
+                var output = Day18.ConvertToJson(n);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":0,\"RightNumber\":1,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":0,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":0,\"LeftSnailfishNumber\":{\"LeftNumber\":0,\"RightNumber\":1,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":null}}";
                 Assert.AreEqual(expect, output);
             }
@@ -81,7 +81,7 @@ namespace _2021.Days.Day17
                 var input = "[[0,[0,[0,[1,1]]]],[0,0]]";
                 var (num, _) = _d.ConvertToSnailfish(input);
                 var (n, _, _, _) = _d.ExplodeSnailfish(num);
-                var output = Day17.ConvertToJson(n);
+                var output = Day18.ConvertToJson(n);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":0,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":0,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":1,\"RightNumber\":0,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}},\"RightSnailfishNumber\":{\"LeftNumber\":1,\"RightNumber\":0,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}";
                 Assert.AreEqual(expect, output);
             }
@@ -89,7 +89,7 @@ namespace _2021.Days.Day17
                 var input = "[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]";
                 var (num, _) = _d.ConvertToSnailfish(input);
                 var (n, _, _, _) = _d.ExplodeSnailfish(num);
-                var output = Day17.ConvertToJson(n);
+                var output = Day18.ConvertToJson(n);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":3,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":2,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":8,\"RightNumber\":0,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}},\"RightSnailfishNumber\":{\"LeftNumber\":9,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":5,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":4,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":3,\"RightNumber\":2,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}}}}";
                 Assert.AreEqual(expect, output);
             }
@@ -97,7 +97,7 @@ namespace _2021.Days.Day17
                 var input = "[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]";
                 var (num, _) = _d.ConvertToSnailfish(input);
                 var (n, _, _, _) = _d.ExplodeSnailfish(num);
-                var output = Day17.ConvertToJson(n);
+                var output = Day18.ConvertToJson(n);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":3,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":2,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":8,\"RightNumber\":0,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}},\"RightSnailfishNumber\":{\"LeftNumber\":9,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":5,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":7,\"RightNumber\":0,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}}}";
                 Assert.AreEqual(expect, output);
             }
@@ -105,7 +105,7 @@ namespace _2021.Days.Day17
                 var input = "[[0,[0,[0,0]]],[[[[1,1],0],0],0]]";
                 var (num, _) = _d.ConvertToSnailfish(input);
                 var (n, _, _, _) = _d.ExplodeSnailfish(num);
-                var output = Day17.ConvertToJson(n);
+                var output = Day18.ConvertToJson(n);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":0,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":0,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":0,\"RightNumber\":1,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}},\"RightSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":0,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":0,\"LeftSnailfishNumber\":{\"LeftNumber\":0,\"RightNumber\":1,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":null}}";
                 Assert.AreEqual(expect, output);
             }
@@ -113,7 +113,7 @@ namespace _2021.Days.Day17
                 var input = "[[0,[0,[0,[1,1]]]],[[[0,0],0],0]]";
                 var (num, _) = _d.ConvertToSnailfish(input);
                 var (n, _, _, _) = _d.ExplodeSnailfish(num);
-                var output = Day17.ConvertToJson(n);
+                var output = Day18.ConvertToJson(n);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":0,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":0,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":1,\"RightNumber\":0,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}},\"RightSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":0,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":0,\"LeftSnailfishNumber\":{\"LeftNumber\":1,\"RightNumber\":0,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":null}}";
                 Assert.AreEqual(expect, output);
             }
@@ -140,10 +140,10 @@ namespace _2021.Days.Day17
                 var input = "[[[[[1,1],[2,2]],[3,3]],[4,4]],[5,5]]";
                 var (num, _) = _d.ConvertToSnailfish(input);
                 var (n, _, _, _) = _d.ExplodeSnailfish(num);
-                var output = Day17.ConvertToJson(n);
+                var output = Day18.ConvertToJson(n);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":0,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":3,\"RightNumber\":2,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":3,\"RightNumber\":3,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":4,\"RightNumber\":4,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":5,\"RightNumber\":5,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}";
                 var (n2, _, _, _) = _d.ExplodeSnailfish(n);
-                var output2 = Day17.ConvertToJson(n2);
+                var output2 = Day18.ConvertToJson(n2);
                 var expect2 = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":3,\"RightNumber\":0,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":5,\"RightNumber\":3,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":4,\"RightNumber\":4,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":5,\"RightNumber\":5,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}";
                 Assert.AreEqual(expect2, output2);
             }
@@ -156,13 +156,13 @@ namespace _2021.Days.Day17
             var (num, _) = _d.ConvertToSnailfish(input);
             var (n, m) = _d.SplitSnailfish(num);
             Assert.IsTrue(m);
-            var output = Day17.ConvertToJson(n);
+            var output = Day18.ConvertToJson(n);
             var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":7,\"RightNumber\":8,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":0,\"RightNumber\":13,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}";
             Assert.AreEqual(expect, output);
 
             var (n2, m2) = _d.SplitSnailfish(n);
             Assert.IsTrue(m2);
-            var output2 = Day17.ConvertToJson(n2);
+            var output2 = Day18.ConvertToJson(n2);
             var expect2 = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":7,\"RightNumber\":8,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":0,\"RightNumber\":null,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":{\"LeftNumber\":6,\"RightNumber\":7,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}}";
             Assert.AreEqual(expect2, output2);
 
@@ -177,7 +177,7 @@ namespace _2021.Days.Day17
                 var input = "[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]";
                 var (num, _) = _d.ConvertToSnailfish(input);
                 var n = _d.ReduceSnailfish(num);
-                var output = Day17.ConvertToJson(n);
+                var output = Day18.ConvertToJson(n);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":4,\"LeftSnailfishNumber\":{\"LeftNumber\":0,\"RightNumber\":7,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":7,\"RightNumber\":8,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":6,\"RightNumber\":0,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}},\"RightSnailfishNumber\":{\"LeftNumber\":8,\"RightNumber\":1,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}";
                 Assert.AreEqual(expect, output);
             }
@@ -185,7 +185,7 @@ namespace _2021.Days.Day17
                 var input = "[[[[[1,1],[2,2]],[3,3]],[4,4]],[5,5]]";
                 var (num, _) = _d.ConvertToSnailfish(input);
                 var n = _d.ReduceSnailfish(num);
-                var output = Day17.ConvertToJson(n);
+                var output = Day18.ConvertToJson(n);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":3,\"RightNumber\":0,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":5,\"RightNumber\":3,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":4,\"RightNumber\":4,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":5,\"RightNumber\":5,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}";
                 Assert.AreEqual(expect, output);
             }
@@ -208,7 +208,7 @@ namespace _2021.Days.Day17
                     return n;
                 }).ToArray();
                 var res = _d.DoSnailfishAddition(list);
-                var output = Day17.ConvertToJson(res);
+                var output = Day18.ConvertToJson(res);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":1,\"RightNumber\":1,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":2,\"RightNumber\":2,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":3,\"RightNumber\":3,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":4,\"RightNumber\":4,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}";
                 Assert.AreEqual(expect, output);
             }
@@ -227,7 +227,7 @@ namespace _2021.Days.Day17
                     return n;
                 }).ToArray();
                 var res = _d.DoSnailfishAddition(list);
-                var output = Day17.ConvertToJson(res);
+                var output = Day18.ConvertToJson(res);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":3,\"RightNumber\":0,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":5,\"RightNumber\":3,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":4,\"RightNumber\":4,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":5,\"RightNumber\":5,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}";
                 Assert.AreEqual(expect, output);
             }
@@ -247,7 +247,7 @@ namespace _2021.Days.Day17
                     return n;
                 }).ToArray();
                 var res = _d.DoSnailfishAddition(list);
-                var output = Day17.ConvertToJson(res);
+                var output = Day18.ConvertToJson(res);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":5,\"RightNumber\":0,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":7,\"RightNumber\":4,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":5,\"RightNumber\":5,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":6,\"RightNumber\":6,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}";
                 Assert.AreEqual(expect, output);
             }
@@ -271,7 +271,7 @@ namespace _2021.Days.Day17
                     return n;
                 }).ToArray();
                 var res = _d.DoSnailfishAddition(list);
-                var output = Day17.ConvertToJson(res);
+                var output = Day18.ConvertToJson(res);
                 var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":8,\"RightNumber\":7,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":7,\"RightNumber\":7,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":8,\"RightNumber\":6,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":7,\"RightNumber\":7,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}},\"RightSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":0,\"RightNumber\":7,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":6,\"RightNumber\":6,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":8,\"RightNumber\":7,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}}";
                 Assert.AreEqual(expect, output);
             }
@@ -323,7 +323,7 @@ namespace _2021.Days.Day17
             }).ToArray();
             var res = _d.DoSnailfishAddition(list);
 
-            var output = Day17.ConvertToJson(res);
+            var output = Day18.ConvertToJson(res);
             var expect = "{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":6,\"RightNumber\":6,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":7,\"RightNumber\":6,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":7,\"RightNumber\":7,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":7,\"RightNumber\":0,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}},\"RightSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":7,\"RightNumber\":7,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":7,\"RightNumber\":7,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}},\"RightSnailfishNumber\":{\"LeftNumber\":null,\"RightNumber\":null,\"LeftSnailfishNumber\":{\"LeftNumber\":7,\"RightNumber\":8,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null},\"RightSnailfishNumber\":{\"LeftNumber\":9,\"RightNumber\":9,\"LeftSnailfishNumber\":null,\"RightSnailfishNumber\":null}}}}";
             Assert.AreEqual(expect, output);
 
@@ -357,18 +357,18 @@ namespace _2021.Days.Day17
         }
     }
     
-    public class Day17
+    public class Day18
 	{
         public static void Run()
         {
-            Console.WriteLine("---Day 17---");
-            var d = new Day17();
+            Console.WriteLine("---Day 18---");
+            var d = new Day18();
             d.Operation();
             Console.WriteLine("------------");
         }
         private void Operation()
         {
-            var input = Library.GetInput(@"./Days/Day17/input.txt").Split("\n");
+            var input = Library.GetInput(@"./Days/Day18/input.txt").Split("\n");
             var list = input.Select(x =>
             {
                 var (n, _) = ConvertToSnailfish(x);

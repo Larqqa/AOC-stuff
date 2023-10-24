@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace _2021.Days.Day17
+namespace _2021.Days.Day18
 {
     public class SnailfishNumber
     {

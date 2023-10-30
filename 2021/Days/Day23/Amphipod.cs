@@ -101,7 +101,7 @@ namespace _2021.Days.Day23
         public bool TargetRoomIsInValidState(Burrow b)
         {
             var (amphipodsInRoom, roomLength) = b.GetAmphipodsInRoomByDoor(TargetDoor);
-            return amphipodsInRoom.Count == 0 || amphipodsInRoom.Count <= roomLength && amphipodsInRoom.All(tar => tar.Type == Type);
+            return amphipodsInRoom.Count == 0 || amphipodsInRoom.All(tar => tar.Type == Type);
         }
 
         public (bool, Point) IsMoveValid(Burrow b, Direction dir)

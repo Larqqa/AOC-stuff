@@ -1,9 +1,100 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using static _2021.Days.Day23.Amphipod;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace _2021.Days.Day23
 {
+
+    [TestClass]
+    public class BurrowTests
+    {
+        [TestMethod]
+        public void TestParsing()
+        {
+            var input = $"#############\r\n#...........#\r\n###B#C#B#D###\r\n  #A#D#C#A#  \r\n  #########  ";
+            var b = new Burrow(input);
+            b.PrintMap();
+
+            Assert.AreEqual("32Bronze52Copper72Bronze92Desert33Amber53Desert73Copper93Amber", b.ToString());
+        }
+
+        [TestMethod]
+        public void TestSolver()
+        {
+            var input = $"#############\r\n#...........#\r\n###B#C#B#D###\r\n  #A#D#C#A#  \r\n  #########  ";
+            var b = new Burrow(input);
+            b.PrintMap();
+
+            Assert.AreEqual(12521, Burrow.Solve(b));
+        }
+
+        [TestMethod]
+        public void TestClone()
+        {
+            var input = $"#############\r\n#...........#\r\n###B#C#B#D###\r\n  #A#D#C#A#  \r\n  #########  ";
+            var b = new Burrow(input);
+            var c = b.Clone();
+            Assert.AreEqual(b, c);
+
+            c.Amphipods[0].MakeMove(c, Direction.Up);
+
+            Assert.AreNotEqual(b, c);
+        }
+
+        [TestMethod]
+        public void TestRoomCheck()
+        {
+            var input = $"#############\r\n#...........#\r\n###B#C#B#D###\r\n  #A#D#C#A#  \r\n  #########  ";
+            var b = new Burrow(input);
+            var (pods, offset) = b.GetAmphipodsInRoomByDoor(new Point(3, 1));
+            Assert.AreEqual(2, offset);
+            Assert.AreEqual(2, pods.Count);
+            CollectionAssert.AreEqual(new List<Types>() { Types.Bronze, Types.Amber }, pods.Select(x => x.Type).ToList());
+            CollectionAssert.AreNotEqual(new List<Types>() { Types.Copper, Types.Desert }, pods.Select(x => x.Type).ToList());
+        }
+
+        [TestMethod]
+        public void TestGenerateAllMoves()
+        {
+            var input = $"#############\r\n#...........#\r\n###B#C#B#D###\r\n  #A#D#C#A#  \r\n  #########  ";
+            var b = new Burrow(input);
+            var moves = b.GenerateAllNextStates();
+            Assert.AreEqual(28, moves.Count);
+        }
+        
+        [TestMethod]
+        public void TestGenerateMoves()
+        {
+            var input = $"#############\r\n#...........#\r\n###B#C#B#D###\r\n  #A#D#C#A#  \r\n  #########  ";
+            var b = new Burrow(input);
+            var moves = b.GenerateAllMovesForAmphipod(0);
+            Assert.AreEqual(7, moves.Count);
+
+            var moves2  = b.GenerateAllMovesForAmphipod(3);
+            Assert.AreEqual(7, moves2.Count);
+
+            b.Amphipods[3].MakeMove(b, Direction.Up);
+            b.Amphipods[3].MakeMove(b, Direction.Right);
+
+            var moves3 = b.GenerateAllMovesForAmphipod(0);
+            Assert.AreEqual(5, moves3.Count);
+
+            var moves4 = b.GenerateAllMovesForAmphipod(3);
+            Assert.AreEqual(6, moves4.Count);
+
+            b.Amphipods[7].MakeMove(b, Direction.Up);
+            b.Amphipods[7].MakeMove(b, Direction.Up);
+            b.Amphipods[7].MakeMove(b, Direction.Left);
+            b.PrintMap();
+
+            var moves5 = b.GenerateAllMovesForAmphipod(7);
+            Assert.AreEqual(4, moves5.Count);
+
+            var moves6 = b.GenerateAllMovesForAmphipod(3);
+            Assert.AreEqual(2, moves6.Count);
+        }
+    }
+
     public class Burrow : IEquatable<Burrow>
     {
         public Tiles[] Map { get; set; }
@@ -96,45 +187,43 @@ namespace _2021.Days.Day23
             }
         }
 
-        public HashSet<(Burrow, int)> GenerateAllNextStates()
+        public Dictionary<Burrow, int> GenerateAllNextStates()
         {
-            var nexts = new HashSet<(Burrow, int)>();
+            var nexts = new Dictionary<Burrow, int>();
             for (var i = 0; i < Amphipods.Count; i++)
             {
                 if (Amphipods[i].IsAmphipodHome(this)) continue;
-                var moves = GenerateAllMovesForAmphipod(i);
-                foreach (var move in moves)
+                foreach(var (key, val) in GenerateAllMovesForAmphipod(i))
                 {
-                    nexts.Add(move);
+                    nexts[key] = val;
                 }
             }
             return nexts;
         }
 
-        public HashSet<(Burrow, int)> GenerateAllMovesForAmphipod(int index)
+        public Dictionary<Burrow, int> GenerateAllMovesForAmphipod(int index)
         {
-            var queue = new Queue<(int, Burrow)>();
-            queue.Enqueue((0, this.Clone()));
+            var queue = new Queue<(Burrow, int)>();
+            queue.Enqueue((this.Clone(), 0));
             var visited = new HashSet<Point>();
-            var moves = new HashSet<(Burrow, int)>();
+            var moves = new Dictionary<Burrow, int>();
             while (queue.Count > 0)
             {
-                var (cost, current) = queue.Dequeue();
+                var (current, cost) = queue.Dequeue();
                 var pod = current.Amphipods[index];
                 foreach (var move in Enum.GetValues<Direction>())
                 {
-                    if (visited.Contains(pod.Location)) continue;
-
                     var c = current.Clone();
                     var p = c.Amphipods[index];
                     if (!p.MakeMove(c, move)) continue;
+                    if (visited.Contains(p.Location)) continue;
 
                     var nextCost = cost + p.GetMovementValue();
-                    queue.Enqueue((nextCost, c));
+                    queue.Enqueue((c, nextCost));
 
                     // Amphipods can't stop at doors
                     if (IsPositionADoor(p.Location)) continue;
-                    moves.Add((c, nextCost));
+                    moves[c] = nextCost;
                 }
                 visited.Add(pod.Location);
             }
@@ -169,19 +258,19 @@ namespace _2021.Days.Day23
             return (amphipodsInRoom, offset - 1);
         }
 
-        public int EstimateCostToResolvedBurrow()
-        {
-            var cost = 0;
-            foreach (var pod in Amphipods)
-            {
-                if (!pod.IsAmphipodHome(this))
-                {
-                    cost += pod.EstimatePathCostToTarget();
-                }
-            }
+        //public int EstimateCostToResolvedBurrow()
+        //{
+        //    var cost = 0;
+        //    foreach (var pod in Amphipods)
+        //    {
+        //        if (!pod.IsAmphipodHome(this))
+        //        {
+        //            cost += pod.EstimatePathCostToTarget();
+        //        }
+        //    }
 
-            return cost;
-        }
+        //    return cost;
+        //}
 
         //public static int Solve(Burrow b)
         //{
@@ -217,15 +306,16 @@ namespace _2021.Days.Day23
         {
             var queue = new PriorityQueue<Burrow, int>();
             queue.Enqueue(b.Clone(), 0);
-            HashSet<Burrow> open = new();
+            HashSet<string> seen = new();
 
             while (queue.Count > 0)
             {
                 if (!queue.TryDequeue(out var current, out int currentCost))
                     throw new Exception("Queuing borked");
-                if (open.Contains(current)) continue;
+
+                if (seen.Contains(current.ToString())) continue;
                 if (current.IsDone()) return currentCost;
-                open.Add(current);
+                seen.Add(current.ToString());
 
                 foreach (var (next, nextCost) in current.GenerateAllNextStates())
                 {
@@ -267,16 +357,12 @@ namespace _2021.Days.Day23
 
         public override string ToString()
         {
-            var m = Map.Aggregate("", (acc, t) => acc + TilesMap.FirstOrDefault(x => x.Value == t).Key);
-            var a = Amphipods.Aggregate("", (acc, a) => acc + a.Location.ToString() + a.Type);
-            return m + a;
+            return Amphipods.Aggregate("", (acc, a) => acc + a.Location.X + a.Location.Y + a.Type);
         }
 
         public override int GetHashCode()
         {
-            var m = Map.Aggregate(0, (acc, x) => acc + (int)x);
-            var a = Amphipods.Aggregate(0, (acc, x) => acc + x.Location.X + x.Location.Y + (int)x.Type);
-            return m + a;
+            return Amphipods.Aggregate(0, (acc, x) => acc + x.Location.X + x.Location.Y + (int)x.Type);
         }
 
         public Burrow Clone()

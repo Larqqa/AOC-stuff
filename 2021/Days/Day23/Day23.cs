@@ -1,7 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
-
-namespace _2021.Days.Day23
+﻿namespace _2021.Days.Day23
 {
     public class Day23
     {
@@ -10,19 +7,15 @@ namespace _2021.Days.Day23
 
             Console.WriteLine("---Day 23---");
             var d = new Day23();
-            var input = $"#############\r\n#...........#\r\n###D#D#C#B###\r\n  #B#A#A#C#  \r\n  #########  ";
-            d.Operation(input);
-
-            //var input2 = $"#############\r\n#...........#\r\n###D#D#C#B###\r\n  #D#C#B#A#  \r\n  #D#B#A#C#  \r\n  #B#A#A#C#  \r\n  #########  ";
-            //d.Operation(input2);
-
+            d.Operation();
             Console.WriteLine("------------");
         }
-        private void Operation(string input)
+        private void Operation()
         {
-            var b = new Burrow(input);
-            var res = Burrow.SolveBurrow(b);
+            var res = Burrow.Solve($"#############\r\n#...........#\r\n###D#D#C#B###\r\n  #B#A#A#C#  \r\n  #########  ");
             Console.WriteLine($"Least amount of moves is: {res}");
+            var res2 = Burrow.Solve($"#############\r\n#...........#\r\n###D#D#C#B###\r\n  #D#C#B#A#  \r\n  #D#B#A#C#  \r\n  #B#A#A#C#  \r\n  #########  ", 13, 7);
+            Console.WriteLine($"Least amount of moves is: {res2}");
         }
     }
 }

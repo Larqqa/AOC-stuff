@@ -12,12 +12,16 @@ namespace _2021.Days.Day23
             var d = new Day23();
             var input = $"#############\r\n#...........#\r\n###D#D#C#B###\r\n  #B#A#A#C#  \r\n  #########  ";
             d.Operation(input);
+
+            //var input2 = $"#############\r\n#...........#\r\n###D#D#C#B###\r\n  #D#C#B#A#  \r\n  #D#B#A#C#  \r\n  #B#A#A#C#  \r\n  #########  ";
+            //d.Operation(input2);
+
             Console.WriteLine("------------");
         }
         private void Operation(string input)
         {
             var b = new Burrow(input);
-            var res = Burrow.Solve(b);
+            var res = Burrow.SolveBurrow(b);
             Console.WriteLine($"Least amount of moves is: {res}");
         }
     }

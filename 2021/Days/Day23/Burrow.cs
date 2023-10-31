@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using static _2021.Days.Day23.Amphipod;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace _2021.Days.Day23
 {
@@ -16,16 +17,6 @@ namespace _2021.Days.Day23
             b.PrintMap();
 
             Assert.AreEqual("32Bronze52Copper72Bronze92Desert33Amber53Desert73Copper93Amber", b.ToString());
-        }
-
-        [TestMethod]
-        public void TestSolver()
-        {
-            var input = $"#############\r\n#...........#\r\n###B#C#B#D###\r\n  #A#D#C#A#  \r\n  #########  ";
-            var b = new Burrow(input);
-            b.PrintMap();
-
-            Assert.AreEqual(12521, Burrow.Solve(b));
         }
 
         [TestMethod]
@@ -91,7 +82,26 @@ namespace _2021.Days.Day23
             Assert.AreEqual(4, moves5.Count);
 
             var moves6 = b.GenerateAllMovesForAmphipod(3);
-            Assert.AreEqual(2, moves6.Count);
+            Assert.AreEqual(3, moves6.Count);
+        }
+
+        [TestMethod]
+        public void runP1()
+        {
+            var input = $"#############\r\n#...........#\r\n###D#D#C#B###\r\n  #B#A#A#C#  \r\n  #########  ";
+            var b = new Burrow(input);
+            b.PrintMap();
+            Assert.AreEqual(16157, Burrow.SolveBurrow(b));
+        }
+
+        [TestMethod]
+        public void runP2()
+        {
+            var input = $"#############\r\n#...........#\r\n###D#D#C#B###\r\n  #D#C#B#A#  \r\n  #D#B#A#C#  \r\n  #B#A#A#C#  \r\n  #########  ";
+            //var input = $"#############\r\n#...........#\r\n###B#C#B#D###\r\n  #D#C#B#A#  \r\n  #D#B#A#C#  \r\n  #A#D#C#A#  \r\n  #########  ";
+            var b = new Burrow(input);
+            b.PrintMap();
+            Assert.AreEqual(44169, Burrow.SolveBurrow(b));
         }
     }
 
@@ -190,10 +200,25 @@ namespace _2021.Days.Day23
         public Dictionary<Burrow, int> GenerateAllNextStates()
         {
             var nexts = new Dictionary<Burrow, int>();
+            Amphipod pod;
+            Tiles tile;
+            Burrow c;
             for (var i = 0; i < Amphipods.Count; i++)
             {
-                if (Amphipods[i].IsAmphipodHome(this)) continue;
-                foreach(var (key, val) in GenerateAllMovesForAmphipod(i))
+                pod = Amphipods[i];
+                if (pod.IsAmphipodStateFinished(this)) continue;
+
+                tile = Map[pod.Location.ToIndex(Width)];
+                if (tile == Tiles.Hallway && !pod.TargetRoomIsInValidState(this)) continue;
+                if (tile == Tiles.Hallway && pod.TargetRoomIsInValidState(this) && pod.PathToRoomIsClear(this))
+                {
+                    c = this.Clone();
+                    var (next, cost) = c.Amphipods[i].MoveToRoom(c);
+                    nexts[next] = cost;
+                    continue;
+                }
+
+                foreach (var (key, val) in GenerateAllMovesForAmphipod(i))
                 {
                     nexts[key] = val;
                 }
@@ -207,25 +232,27 @@ namespace _2021.Days.Day23
             queue.Enqueue((this.Clone(), 0));
             var visited = new HashSet<Point>();
             var moves = new Dictionary<Burrow, int>();
+            Amphipod p;
+            Burrow c;
+            int nextCost;
             while (queue.Count > 0)
             {
                 var (current, cost) = queue.Dequeue();
-                var pod = current.Amphipods[index];
                 foreach (var move in Enum.GetValues<Direction>())
                 {
-                    var c = current.Clone();
-                    var p = c.Amphipods[index];
+                    c = current.Clone();
+                    p = c.Amphipods[index];
                     if (!p.MakeMove(c, move)) continue;
                     if (visited.Contains(p.Location)) continue;
 
-                    var nextCost = cost + p.GetMovementValue();
+                    nextCost = cost + p.GetMovementValue();
                     queue.Enqueue((c, nextCost));
 
-                    // Amphipods can't stop at doors
                     if (IsPositionADoor(p.Location)) continue;
                     moves[c] = nextCost;
                 }
-                visited.Add(pod.Location);
+
+                visited.Add(current.Amphipods[index].Location);
             }
             return moves;
         }
@@ -258,68 +285,44 @@ namespace _2021.Days.Day23
             return (amphipodsInRoom, offset - 1);
         }
 
-        //public int EstimateCostToResolvedBurrow()
-        //{
-        //    var cost = 0;
-        //    foreach (var pod in Amphipods)
-        //    {
-        //        if (!pod.IsAmphipodHome(this))
-        //        {
-        //            cost += pod.EstimatePathCostToTarget();
-        //        }
-        //    }
-
-        //    return cost;
-        //}
-
-        //public static int Solve(Burrow b)
-        //{
-        //    var c = b.Clone();
-        //    var queue = new PriorityQueue<Burrow, int>();
-        //    queue.Enqueue(c, c.EstimateCostToResolvedBurrow());
-        //    HashSet<Burrow> open = new() { c };
-        //    var costs = new Dictionary<Burrow, int>() {{ c, 0 }};
-
-        //    while(queue.Count > 0)
-        //    {
-        //        if (!queue.TryDequeue(out var current, out int currentCost))
-        //            throw new Exception("Queuing borked");
-        //        if (currentCost - costs[current] == 0) return costs[current];
-        //        open.Remove(current);
-
-        //        foreach (var (next, nextCost) in current.GenerateAllNextStates())
-        //        {
-        //            var foundCost = costs[current] + nextCost;
-        //            if (foundCost >= costs.GetValueOrDefault(next, int.MaxValue)) continue;
-
-        //            costs[next] = foundCost;
-        //            if (open.Contains(next)) continue;
-        //            open.Add(next);
-        //            queue.Enqueue(next, next.EstimateCostToResolvedBurrow() + foundCost);
-        //        }
-        //    }
-
-        //    throw new Exception("No solution was found!");
-        //}
-
-        public static int Solve(Burrow b)
+        public int EstimateCostToResolvedBurrow()
         {
-            var queue = new PriorityQueue<Burrow, int>();
-            queue.Enqueue(b.Clone(), 0);
-            HashSet<string> seen = new();
-
-            while (queue.Count > 0)
+            var cost = 0;
+            foreach (var pod in Amphipods)
             {
-                if (!queue.TryDequeue(out var current, out int currentCost))
+                if (!pod.IsAmphipodStateFinished(this))
+                {
+                    cost += pod.EstimatePathCostToTarget();
+                }
+            }
+            return cost;
+        }
+
+        public static int SolveBurrow(Burrow b)
+        {
+            var heap = new PriorityQueue<Burrow, int>();
+            heap.Enqueue(b, b.EstimateCostToResolvedBurrow());
+            HashSet<string> open = new() { b.ToString() };
+            Dictionary<string, int> costs = new() { { b.ToString(), 0 } };
+
+            int foundCost;
+            while (heap.Count > 0)
+            {
+                if (!heap.TryDequeue(out var current, out int cost))
                     throw new Exception("Queuing borked");
 
-                if (seen.Contains(current.ToString())) continue;
-                if (current.IsDone()) return currentCost;
-                seen.Add(current.ToString());
+                if (cost - costs[current.ToString()] == 0) return costs[current.ToString()];
+                open.Remove(current.ToString());
 
                 foreach (var (next, nextCost) in current.GenerateAllNextStates())
                 {
-                    queue.Enqueue(next, currentCost + nextCost);
+                    foundCost = costs[current.ToString()] + nextCost;
+                    if (foundCost >= costs.GetValueOrDefault(next.ToString(), int.MaxValue)) continue;
+
+                    costs[next.ToString()] = foundCost;
+                    if (open.Contains(next.ToString())) continue;
+                    open.Add(next.ToString());
+                    heap.Enqueue(next, next.EstimateCostToResolvedBurrow() + foundCost);
                 }
             }
 
@@ -328,7 +331,7 @@ namespace _2021.Days.Day23
 
         public bool IsDone()
         {
-            return Amphipods.All(x => x.IsAmphipodHome(this));
+            return Amphipods.All(x => x.IsAmphipodStateFinished(this));
         }
 
         public override bool Equals(object? obj)

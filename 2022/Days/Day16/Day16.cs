@@ -1,7 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Library;
-using System.Runtime.ConstrainedExecution;
-using System.Linq;
 
 namespace _2022.Days.Day16
 {
@@ -105,17 +103,20 @@ namespace _2022.Days.Day16
             var input = General.GetInput(@"./Days/Day16/input.txt");
             _d.tunnels = _d.ParseTunnels(input);
             _d.targets = _d.MapAllPossibleTargets();
-            var (score, path) = _d.FindPaths("AA");
+            var (score, path) = _d.FindPaths("AA", string.Empty, 30);
             Console.WriteLine($"Best pressure: {score} path {string.Join("->", path)}");
         }
 
         [TestMethod]
         public void testP2()
         {
-            _d.tunnels = _d.ParseTunnels(testInput);
+            var input = General.GetInput(@"./Days/Day16/input.txt");
+            _d.tunnels = _d.ParseTunnels(input);
             _d.targets = _d.MapAllPossibleTargets();
-            var (score, path) = _d.FindPaths("AA", string.Empty, 26);
-            Assert.AreEqual(1707, score);
+            _d.FindPaths("AA", string.Empty, 26);
+            var (moves, value) = _d.HighestNonOverlappingPaths(15);
+            Console.WriteLine(moves);
+            Assert.AreEqual(2591, value);
         }
     }
 
@@ -138,8 +139,17 @@ namespace _2022.Days.Day16
             var input = General.GetInput(@"./Days/Day16/input.txt");
             tunnels = ParseTunnels(input);
             targets = MapAllPossibleTargets();
-            var (score, path) = FindPaths("AA");
-            Console.WriteLine($"Best pressure: {score} path {string.Join("->", path)}");
+            {
+                var (score, path) = FindPaths("AA");
+                Console.WriteLine($"Best pressure p1: {score} path {string.Join("->", path)}");
+            }
+            {
+                BestMoves = new(); // empty p1 moves
+                FindPaths("AA", string.Empty, 26);
+                var (path, score) = HighestNonOverlappingPaths(15);
+                Console.WriteLine($"Best pressure p2: {score} open valves: {path}");
+            }
+
         }
 
         public Dictionary<string, Tunnel> ParseTunnels(string input)
@@ -206,8 +216,11 @@ namespace _2022.Days.Day16
             return targets;
         }
 
-        public (int, List<string>) FindPaths(string current, string open = "", int timeLeft = 30)
+        public (int, List<string>) FindPaths(string current, string open = "", int timeLeft = 30, int pressure = 0)
         {
+            if (!BestMoves.ContainsKey(open) || BestMoves[open] < pressure)
+                BestMoves[open] = pressure;
+
             var bestPath = new List<string>() { current };
             var bestPressure = 0;
 
@@ -215,15 +228,16 @@ namespace _2022.Days.Day16
             foreach (var (key, path) in targetNodes)
             {
                 if (open.Contains(key)) continue;
-                var length = path.Split(',').Length - 1;
-                var t = timeLeft - length - 1;
+                var length = path.Split(',').Length - 1; // cost to get to node
+                var t = timeLeft - length - 1; // cost with opening of valve
                 if (t <= 0) continue;
 
                 var node = tunnels[key];
-                var pressure = t * node.FlowRate;
+                var futurePressure = t * node.FlowRate;
+                var nextOpens = string.IsNullOrEmpty(open) ? key : $"{open},{key}";
 
-                var (nextPressure, nextPath) = FindPaths(key, $"{open},{key}", t);
-                var newPressure = pressure + nextPressure;
+                var (nextPressure, nextPath) = FindPaths(key, nextOpens, t, pressure + futurePressure);
+                var newPressure = futurePressure + nextPressure;
 
                 if (newPressure > bestPressure)
                 {
@@ -234,30 +248,44 @@ namespace _2022.Days.Day16
 
             return (bestPressure, bestPath);
         }
-    }
 
-    public class State
-    {
-        public int Time { get; set; }
-        public string Position { get; set; }
-        public string Target { get; set; }
-        public int Pressure { get; set; }
-        public List<string> MoveStack { get; set; }
-        public HashSet<string> OpenValves { get; set; }
-
-        public State(int time, string position, string target, int pressure, List<string> moveStack, HashSet<string> openValves)
+        public (string, int) HighestNonOverlappingPaths(int maxValves)
         {
-            Time = time;
-            Position = position;
-            Target = target;
-            Pressure = pressure;
-            MoveStack = moveStack;
-            OpenValves = openValves;
-        }
-    }
+            // Remove duplicates, select only the highest valued one
+            var bestMoves = new Dictionary<string, int>();
+            var moves = BestMoves.Select( x => (string.Join(",", x.Key.Split(",").OrderBy(q => q)), x.Value)).ToArray();
+            foreach(var(key, val) in moves)
+            {
+                if (!bestMoves.ContainsKey(key))
+                    bestMoves[key] = val;
 
-    public class IntMaxCompare: IComparer<int>
-    {
-        public int Compare(int x, int y) => y.CompareTo(x);
+                if (bestMoves[key] < val)
+                    bestMoves[key] = val;
+            }
+
+            // Check for two highest value non intersecting paths
+            var bests = bestMoves.ToArray();
+            var bestValue = 0;
+            var bestPath = "";
+            for (int i = 0; i < bests.Length; i++)
+            {
+                var first = bests[i];
+                var fk = first.Key.Split(",");
+                for (int j = i + 1; j < bests.Length; j++)
+                {
+                    var second = bests[j];
+                    var sk = second.Key.Split(",");
+
+                    if (fk.Intersect(sk).Any()) continue;
+                    if (bestValue < first.Value + second.Value)
+                    {
+                        bestPath = first.Key + " & " + second.Key;
+                        bestValue = first.Value + second.Value;
+                    }
+                }
+            }
+
+            return (bestPath, bestValue);
+        }
     }
 }

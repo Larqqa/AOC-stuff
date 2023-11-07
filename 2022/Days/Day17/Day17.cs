@@ -29,8 +29,17 @@ namespace _2022.Days.Day17
         {
             var d = new Day17();
             var c = new Chamber();
-            d.RunLoop(c, ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>", 2022);
+            d.RunLoop(c, ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>", 2022, false);
             Assert.AreEqual(3068, c.Height - c.GetLocationOfTopMostRock().Y - 1);
+        }
+
+
+        [TestMethod]
+        public void TestLoopP2()
+        {
+            var d = new Day17();
+            var c = new Chamber();
+            var (_, keys) = d.RunLoop(c, ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>", 5000, false);
         }
     }
 
@@ -82,8 +91,9 @@ namespace _2022.Days.Day17
             throw new Exception("Rock shape index out of bounds!");
         }
 
-        public Chamber RunLoop(Chamber chamber, string input, long maxRocks, bool draw = false)
+        public (Chamber, List<(int, long)>)RunLoop(Chamber chamber, string input, int maxRocks, bool draw = false)
         {
+            var keys = new List<(int, long)>();
             var queue = GetMoveStack(input);
             var rockInTransit = false;
             Rock currentRock = new Dash(new()); // Placeholder rock
@@ -109,6 +119,8 @@ namespace _2022.Days.Day17
                     currentRock.Position.Y = topRock.Y - 4;
                     rockInTransit = true;
                     rocks++;
+
+                    keys.Add(((int)currentRock.Shape + input.Length - queue.Count + FindPeaks(chamber), chamber.Height - topRock.Y - 1));
                 }
 
                 if (nextMove == Rock.Direction.Empty)
@@ -134,7 +146,28 @@ namespace _2022.Days.Day17
             if (draw)
                 chamber.Draw();
 
-            return chamber;
+            return (chamber, keys);
+        }
+
+        public int FindPeaks(Chamber c)
+        {
+            var peaks = new List<int>();
+            for (int x = 1; x < c.Width - 1; x++)
+            {
+                var y = 0;
+                var p = new Point(x, y);
+                var t = c.GetTile(p);
+                while (t != Chamber.Tile.Rock && t != Chamber.Tile.Floor)
+                {
+                    y++;
+                    p.Y = y;
+                    t = c.GetTile(p);
+                }
+
+                peaks.Add(p.ToIndex(c.Width));
+            }
+
+            return peaks.Aggregate(0, (acc, p) => acc + p);
         }
     }
 }

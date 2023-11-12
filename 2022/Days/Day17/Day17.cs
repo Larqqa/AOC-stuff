@@ -12,16 +12,16 @@ namespace _2022.Days.Day17
         public void SpawnNextRock()
         {
             var d = new Day17();
-            Assert.AreEqual(Rock.Shapes.Dash, d.SpawnNextRock(0, new()).Shape);
-            Assert.AreEqual(Rock.Shapes.Cross, d.SpawnNextRock(1, new()).Shape);
-            Assert.AreEqual(Rock.Shapes.Corner, d.SpawnNextRock(2, new()).Shape);
-            Assert.AreEqual(Rock.Shapes.Line, d.SpawnNextRock(3, new()).Shape);
-            Assert.AreEqual(Rock.Shapes.Square, d.SpawnNextRock(4, new()).Shape);
-            Assert.AreEqual(Rock.Shapes.Dash, d.SpawnNextRock(5, new()).Shape);
-            Assert.AreEqual(Rock.Shapes.Cross, d.SpawnNextRock(6, new()).Shape);
-            Assert.AreEqual(Rock.Shapes.Corner, d.SpawnNextRock(7, new()).Shape);
-            Assert.AreEqual(Rock.Shapes.Line, d.SpawnNextRock(8, new()).Shape);
-            Assert.AreEqual(Rock.Shapes.Square, d.SpawnNextRock(9, new()).Shape);
+            Assert.AreEqual(Rock.Shapes.Dash, d.SpawnNextRock(0 % 5, new()).Shape);
+            Assert.AreEqual(Rock.Shapes.Cross, d.SpawnNextRock(1 % 5, new()).Shape);
+            Assert.AreEqual(Rock.Shapes.Corner, d.SpawnNextRock(2 % 5, new()).Shape);
+            Assert.AreEqual(Rock.Shapes.Line, d.SpawnNextRock(3 % 5, new()).Shape);
+            Assert.AreEqual(Rock.Shapes.Square, d.SpawnNextRock(4 % 5, new()).Shape);
+            Assert.AreEqual(Rock.Shapes.Dash, d.SpawnNextRock(5 % 5, new()).Shape);
+            Assert.AreEqual(Rock.Shapes.Cross, d.SpawnNextRock(6 % 5, new()).Shape);
+            Assert.AreEqual(Rock.Shapes.Corner, d.SpawnNextRock(7 % 5, new()).Shape);
+            Assert.AreEqual(Rock.Shapes.Line, d.SpawnNextRock(8 % 5, new()).Shape);
+            Assert.AreEqual(Rock.Shapes.Square, d.SpawnNextRock(9 % 5, new()).Shape);
         }
 
         [TestMethod]
@@ -40,6 +40,7 @@ namespace _2022.Days.Day17
             var d = new Day17();
             var c = new Chamber();
             var (_, keys) = d.RunLoop(c, ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>", 5000, false);
+            Assert.AreEqual(1514285714288, d.FindHeightAtRock(1000000000000, keys));
         }
     }
 
@@ -58,8 +59,13 @@ namespace _2022.Days.Day17
             var input = General.GetInput(@"./Days/Day17/input.txt");
             var d = new Day17();
             var c = new Chamber();
-            d.RunLoop(c, input, 2022);
-            Console.WriteLine($"P1: Height of the rocks is: {c.Height - c.GetLocationOfTopMostRock().Y - 1}");
+            var(_, keys) = d.RunLoop(c, input, 10000);
+
+            var p1 = d.FindHeightAtRock(2022, keys);
+            Console.WriteLine($"Height at 2022 rocks is: {p1}");
+            
+            var p2 = d.FindHeightAtRock(1000000000000, keys);
+            Console.WriteLine($"Height 1000000000000 rocks is: {p2}");
         }
 
         public Stack<char> GetMoveStack(string input)
@@ -91,9 +97,9 @@ namespace _2022.Days.Day17
             throw new Exception("Rock shape index out of bounds!");
         }
 
-        public (Chamber, List<(int, long)>)RunLoop(Chamber chamber, string input, int maxRocks, bool draw = false)
+        public (Chamber, List<(string, long)>)RunLoop(Chamber chamber, string input, int maxRocks, bool draw = false)
         {
-            var keys = new List<(int, long)>();
+            var keys = new List<(string, long)>();
             var queue = GetMoveStack(input);
             var rockInTransit = false;
             Rock currentRock = new Dash(new()); // Placeholder rock
@@ -120,7 +126,7 @@ namespace _2022.Days.Day17
                     rockInTransit = true;
                     rocks++;
 
-                    keys.Add(((int)currentRock.Shape + input.Length - queue.Count + FindPeaks(chamber), chamber.Height - topRock.Y - 1));
+                    keys.Add(($"{(int)currentRock.Shape}{input.Length - queue.Count}{FindPeaks(chamber)}", chamber.Height - topRock.Y - 1));
                 }
 
                 if (nextMove == Rock.Direction.Empty)
@@ -130,8 +136,6 @@ namespace _2022.Days.Day17
                 }
                 else
                 {
-                    //c.Draw(currentRock);
-
                     currentRock.Move(nextMove, chamber);
                     nextMove = Rock.Direction.Empty;
 
@@ -149,7 +153,7 @@ namespace _2022.Days.Day17
             return (chamber, keys);
         }
 
-        public int FindPeaks(Chamber c)
+        public string FindPeaks(Chamber c)
         {
             var peaks = new List<int>();
             for (int x = 1; x < c.Width - 1; x++)
@@ -167,7 +171,61 @@ namespace _2022.Days.Day17
                 peaks.Add(p.ToIndex(c.Width));
             }
 
-            return peaks.Aggregate(0, (acc, p) => acc + p);
+            return peaks.Aggregate("", (acc, p) => acc + p);
+        }
+
+        public (int, int, long) FindCycle(List<(string, long)> keys)
+        {
+            var match = false;
+            var tortoise = 0;
+            var hare = 1;
+            while (!match)
+            {
+                while (keys[tortoise].Item1 != keys[hare].Item1)
+                {
+                    tortoise += 1;
+                    hare += 2;
+                }
+                match = true;
+
+                var offset = hare - tortoise;
+                var t = tortoise + 1;
+                var h = hare + 1;
+                while (offset > 0)
+                {
+                    if (keys[t].Item1 != keys[h].Item1)
+                    {
+                        match = false;
+                        tortoise += 1;
+                        hare += 2;
+                        break;
+                    }
+                    t += 1;
+                    h += 1;
+                    offset--;
+                }
+            }
+
+            var lam = 1;
+            hare = tortoise + 1;
+            while (keys[tortoise].Item1 != keys[hare].Item1)
+            {
+                hare++;
+                lam++;
+            }
+
+            // (starting index of cycle, length of cycle, height of cycle)
+            return (tortoise, lam, keys[hare].Item2 - keys[tortoise].Item2);
+        }
+
+        public long FindHeightAtRock(long rockAmount, List<(string, long)> keys)
+        {
+            var (start, length, height) = FindCycle(keys);
+            var leftOver = rockAmount - start;
+            var overflow = leftOver % length;
+            var nonCyclicalHeight = keys[start + (int)overflow].Item2;
+            var cyclicalHeight = (leftOver - overflow) / length * height;
+            return nonCyclicalHeight + cyclicalHeight;
         }
     }
 }

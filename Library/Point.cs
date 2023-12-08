@@ -61,5 +61,10 @@
         {
             return X + Y + Z;
         }
+
+        public Point Add(Point p)
+        {
+            return new Point(X + p.X, Y + p.Y, Z + p.Z);
+        }
     }
 }

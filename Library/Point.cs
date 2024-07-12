@@ -66,5 +66,12 @@
         {
             return new Point(X + p.X, Y + p.Y, Z + p.Z);
         }
+
+        public bool OutOfBounds(int maxX, int maxY, int maxZ = 1)
+        {
+            return
+                (X < 0 || Y < 0 || Z < 0) ||
+                (X >= maxX || Y >= maxY || Z >= maxZ);
+        }
     }
 }

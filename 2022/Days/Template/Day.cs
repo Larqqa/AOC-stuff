@@ -1,7 +1,7 @@
 ﻿using Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace _2022.Days.Day
+namespace _2022.Days.Template
 {
     [TestClass]
     public class DayTests
@@ -18,14 +18,13 @@ namespace _2022.Days.Day
         public static void Run()
         {
             Console.WriteLine("---Day XX---");
-            var d = new Day();
-            d.Operation();
+            Operation();
             Console.WriteLine("------------");
         }
 
-        public void Operation()
+        public static void Operation()
         {
-            var input = General.GetInput(@"./Days/Day/input.txt");
+            var input = General.GetInput("./Days/Day/input.txt");
             Console.WriteLine(input);
         }
     }

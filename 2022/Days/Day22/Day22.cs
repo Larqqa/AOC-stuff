@@ -77,56 +77,56 @@ namespace _2022.Days.Day22
         {
             var input = General.GetInput("./Days/Day22/input.txt");
 
-            var human = ParseInput(input);
-            while (human.Instructions.Count > 0)
             {
-                human.DoNextInstruction();
+                var human = ParseInput(input);
+                while (human.Instructions.Count > 0)
+                {
+                    human.DoNextInstruction();
+                }
+        
+                var password = GetPassword(human.Location, human.Direction);
+                Console.WriteLine($"p1: {password}");
             }
-
-            var password = GetPassword(human.Location, human.Direction);
-            Console.WriteLine($"p1: {password}");
-
-            List<(Point, Point, int)> transformMap = new()
             {
-                (new Point(50,0), new Point(100,50), 0),
-                (new Point(50,100), new Point(100,150), 0),
+                // First point of face, Last point of face, 90 deg rotations to left or right (left < 0 < right)
+                List<(Point, Point, int)> transformMap = new()
+                {
+                    (new Point(50,0), new Point(100,50), 0),
+                    (new Point(50,100), new Point(100,150), 0),
 
-                (new Point(0,100), new Point(50,150), 2),
-                (new Point(100,0), new Point(150,50), 0),
+                    (new Point(0,100), new Point(50,150), 2),
+                    (new Point(100,0), new Point(150,50), 0),
 
-                (new Point(0,150), new Point(50,200), -1),
-                (new Point(50,50), new Point(100,100), 0)
-            };
+                    (new Point(0,150), new Point(50,200), -1),
+                    (new Point(50,50), new Point(100,100), 0)
+                };
 
-            var human3d = ParseInputForCube(input, transformMap);
-            while (human3d.Instructions.Count > 0)
-            {
-                human3d.DoNextInstruction();
+                var human = ParseInputForCube(input, transformMap);
+                while (human.Instructions.Count > 0)
+                {
+                    human.DoNextInstruction();
+                }
+
+                // Reverse rotation of the face we end up in to get accurate row/col values
+
+                var (offset, _, rotation) = transformMap[(int)human.Face];
+                var direction = rotation > 0;
+
+                for (var i = 0; i < Math.Abs(rotation); i++)
+                {
+                    human.Location = direction
+                        ? new Point(human.Location.Y, human.Map.Width - human.Location.X - 1)
+                        : new Point(human.Map.Width - human.Location.Y - 1, human.Location.X);
+
+                    human.Turn(direction ? Direction.Left : Direction.Right);
+                }
+
+                // Add face's offset, since we map location in relation to current face
+                human.Location = human.Location.Add(offset);
+
+                var password = GetPassword(human.Location, human.Direction);
+                Console.WriteLine($"p2: {password}");
             }
-
-            Console.WriteLine(human3d);
-
-            var t = transformMap[(int)human3d.Face];
-
-            var invertRotation = t.Item3;
-            var invertDirection = invertRotation > 0;
-            var location = human3d.Location;
-
-            for (var i = 0; i < Math.Abs(invertRotation); i++)
-            {
-                location = invertDirection ? new Point(location.Y, human3d.Map.Width - location.X - 1) : new Point(human3d.Map.Width - location.Y - 1, location.X);
-                human3d.Turn(invertDirection ? Direction.Left : Direction.Right);
-            }
-
-            location = location.Add(t.Item1);
-
-            Console.WriteLine($"p2: {location} {human3d.Direction}");
-
-            var password2 = GetPassword(location, human3d.Direction);
-            Console.WriteLine($"p2: {password2}");
-            // 21103 Too low
-            // 37427 nop
-            // 130070 Too high
         }
 
         public static Human ParseInput(string input)

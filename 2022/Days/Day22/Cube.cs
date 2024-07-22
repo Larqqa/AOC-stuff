@@ -52,15 +52,16 @@ namespace _2022.Days.Day22
             Bottom = bottom;
         }
 
-        /**
-         * Give the faces in this order front,back, left,right, top,bottom
-         */
+        /// <summary>
+        /// Read and map cube faces from string input.
+        /// All faces should be perfect squares.
+        /// Give the face position matrix in this order: front,back, left,right, top,bottom
+        /// </summary>
         public static Cube ParseCube(string input, List<(Point start, Point end, int rotations)> positions)
         {
             var inp = input.Split("\r\n\r\n");
             var rows = inp[0].Split("\r\n");
 
-            // eg. ((8,0), (11, 3)) would map face 1 in the example
             var maps = new List<Map>();
             foreach (var (start, end, rotations) in positions)
             {
@@ -82,8 +83,7 @@ namespace _2022.Days.Day22
                 };
 
                 var direction = rotations > 0;
-                var rotationTimes = Math.Abs(rotations);
-                for (var i = 0; i < rotationTimes; i++)
+                for (var i = 0; i < Math.Abs(rotations); i++)
                 {
                     map.RotateSquareMap(direction);
                 }
@@ -91,7 +91,7 @@ namespace _2022.Days.Day22
                 maps.Add(map);
             }
 
-            // This is why foreach order matters
+            // Mapped cube face order used here, so position order is important!
             return new Cube(maps[0], maps[1], maps[2], maps[3], maps[4], maps[5]);
         }
 
@@ -109,7 +109,7 @@ namespace _2022.Days.Day22
             };
         }
 
-        public Face GetNextFace(Direction d, Face currentFace)
+        public static Face GetNextFace(Direction d, Face currentFace)
         {
             return currentFace switch
             {

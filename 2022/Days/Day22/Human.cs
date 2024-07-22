@@ -10,10 +10,13 @@ namespace _2022.Days.Day22
         private string input =
             "        ....\r\n        ....\r\n        ....\r\n        ....\r\n............\r\n............\r\n............\r\n............\r\n        ........\r\n        ........\r\n        ........\r\n        ........\r\n\r\n";
 
+        private string inputWithWalls =
+            "        ....\r\n        ....\r\n        ....\r\n        ....\r\n############\r\n............\r\n............\r\n............\r\n        .......#\r\n        .......#\r\n        .......#\r\n        .......#\r\n\r\n";
+
         [TestMethod]
         public void TestMovingRight()
         {
-            input += "4LR4LR4LR4";
+            input += "4LR4LR4LR4R1L4LR4LR4LR4R2L4LR4LR4LR4";
             var human = Day22.ParseInputForCube(input, CubeTests.TransformTestMap);
             while (human.Instructions.Count > 0)
             {
@@ -25,7 +28,7 @@ namespace _2022.Days.Day22
         [TestMethod]
         public void TestMovingLeft()
         {
-            input += "1LL5LR4LR4LR4";
+            input += "1LL5LR4LR4LR4L1R4LR4LR4LR4L2R4LR4LR4LR4";
             var human = Day22.ParseInputForCube(input, CubeTests.TransformTestMap);
             while (human.Instructions.Count > 0)
             {
@@ -37,7 +40,7 @@ namespace _2022.Days.Day22
         [TestMethod]
         public void TestMovingUp()
         {
-            input += "1L4LR4LR4LR4";
+            input += "1LL1R4LR4LR4LR4R1L4LR4LR4LR4R2L4LR4LR4LR4";
             var human = Day22.ParseInputForCube(input, CubeTests.TransformTestMap);
             while (human.Instructions.Count > 0)
             {
@@ -49,7 +52,7 @@ namespace _2022.Days.Day22
         [TestMethod]
         public void TestMovingDown()
         {
-            input += "1R4LR4LR4LR4";
+            input += "1LL1L4LR4LR4LR4L1R4LR4LR4LR4L2R4LR4LR4LR4";
             var human = Day22.ParseInputForCube(input, CubeTests.TransformTestMap);
             while (human.Instructions.Count > 0)
             {
@@ -59,9 +62,9 @@ namespace _2022.Days.Day22
         }
 
         [TestMethod]
-        public void TestMovingUpRight()
+        public void TestMovingUpLeftFace()
         {
-            input += "4L4LR4LR4LR4";
+            input += "4L4LR4LR4LR4R1L4LR4LR4LR4R2L4LR4LR4LR4";
             var human = Day22.ParseInputForCube(input, CubeTests.TransformTestMap);
             while (human.Instructions.Count > 0)
             {
@@ -71,10 +74,34 @@ namespace _2022.Days.Day22
         }
 
         [TestMethod]
-        public void TestMovingUpLeft()
+        public void TestMovingDownLeftFace()
         {
-            input += "4R4LR4LR4LR4";
+            input += "4R4LR4LR4LR4L1R4LR4LR4LR4L2R4LR4LR4LR4";
             var human = Day22.ParseInputForCube(input, CubeTests.TransformTestMap);
+            while (human.Instructions.Count > 0)
+            {
+                human.DoNextInstruction();
+                Console.WriteLine(human);
+            }
+        }
+
+        [TestMethod]
+        public void TestMovingAgainstWalls()
+        {
+            inputWithWalls += "5R5R5R5LL5L5L5L5";
+            var human = Day22.ParseInputForCube(inputWithWalls, CubeTests.TransformTestMap);
+            while (human.Instructions.Count > 0)
+            {
+                human.DoNextInstruction();
+                Console.WriteLine(human);
+            }
+        }
+
+        [TestMethod]
+        public void TestMovingDownToWall()
+        {
+            inputWithWalls += "1LL1L5LL5LL5";
+            var human = Day22.ParseInputForCube(inputWithWalls, CubeTests.TransformTestMap);
             while (human.Instructions.Count > 0)
             {
                 human.DoNextInstruction();
@@ -130,7 +157,7 @@ namespace _2022.Days.Day22
                     Direction.Down => Location.Y++,
                     Direction.Left => Location.X--,
                     Direction.Up => Location.Y--,
-                    _ => throw new Exception("Not allowed to turn there!")
+                    _ => throw new ArgumentOutOfRangeException()
                 };
 
                 if (Location.X < 0)
@@ -240,21 +267,22 @@ namespace _2022.Days.Day22
                     Direction.Down => Location.Y++,
                     Direction.Left => Location.X--,
                     Direction.Up => Location.Y--,
-                    _ => throw new Exception("Not allowed to turn there!")
+                    _ => throw new ArgumentOutOfRangeException()
                 };
 
                 var newLocation = new Point(Location.X, Location.Y);
                 var newFace = Face;
                 var newMap = Map;
+                var newDirection = Direction;
 
-                // If we go over the edge, change map to different face
+                // If we go over the edge, change map to next face
                 if (Location.X < 0 || Location.Y < 0 || Location.X >= Map.Width || Location.Y >= Map.Height)
                 {
                     newFace = Cube.GetNextFace(Direction, Face);
                     newMap = Cube.GetFace(newFace);
                 }
 
-                // If we go over an edge, wrap around to other face
+                // If we go over an edge, wrap around to next face
                 if (Location.X < 0)
                 {
                     newLocation.X = Map.Width - 1;
@@ -275,20 +303,21 @@ namespace _2022.Days.Day22
                     newLocation.Y = 0;
                 }
 
-                // Handle special cases where direction does not line up
+                // Handle special cases where direction does not line up directly
+
                 if (newFace != Face && Face == Face.Back)
                 {
                     if (Direction == Direction.Left)
                     {
                         newLocation.X = 0;
                         newLocation.Y = Map.Width - 1 - Location.Y;
-                        Direction = Direction.Right;
+                        newDirection = Direction.Right;
                     }
                     else if (Direction == Direction.Right)
                     {
                         newLocation.X = Map.Width - 1;
                         newLocation.Y = Map.Width - 1 - Location.Y;
-                        Direction = Direction.Left;
+                        newDirection = Direction.Left;
                     }
                 }
 
@@ -298,21 +327,21 @@ namespace _2022.Days.Day22
                     {
                         newLocation.X = 0;
                         newLocation.Y = Location.X;
-                        Direction = Direction.Right;
+                        newDirection = Direction.Right;
                     }
 
                     if (Location.Y >= Map.Height && Direction == Direction.Down)
                     {
                         newLocation.X = 0;
                         newLocation.Y = Map.Width - 1 - Location.X;
-                        Direction = Direction.Right;
+                        newDirection = Direction.Right;
                     }
 
                     if (Direction == Direction.Left)
                     {
                         newLocation.X = 0;
                         newLocation.Y = Map.Width - 1 - Location.Y;
-                        Direction = Direction.Right;
+                        newDirection = Direction.Right;
                     }
                 }
 
@@ -322,21 +351,21 @@ namespace _2022.Days.Day22
                     {
                         newLocation.X = Map.Width - 1;
                         newLocation.Y = Map.Width - 1 - Location.X;
-                        Direction = Direction.Left;
+                        newDirection = Direction.Left;
                     }
 
                     if (Direction == Direction.Down)
                     {
                         newLocation.X = Map.Width - 1;
                         newLocation.Y = Location.X;
-                        Direction = Direction.Left;
+                        newDirection = Direction.Left;
                     }
 
                     if (Direction == Direction.Right)
                     {
                         newLocation.X = Map.Width - 1;
                         newLocation.Y = Map.Width - 1 - Location.Y;
-                        Direction = Direction.Left;
+                        newDirection = Direction.Left;
                     }
                 }
 
@@ -346,14 +375,14 @@ namespace _2022.Days.Day22
                     {
                         newLocation.X = Map.Width - 1 - Location.Y;
                         newLocation.Y = 0;
-                        Direction = Direction.Down;
+                        newDirection = Direction.Down;
                     }
 
                     if (Direction == Direction.Left)
                     {
                         newLocation.X = Location.Y;
                         newLocation.Y = 0;
-                        Direction = Direction.Down;
+                        newDirection = Direction.Down;
                     }
                 }
 
@@ -363,20 +392,22 @@ namespace _2022.Days.Day22
                     {
                         newLocation.X = Location.Y;
                         newLocation.Y = Map.Width - 1;
-                        Direction = Direction.Up;
+                        newDirection = Direction.Up;
                     }
 
                     if (Location.X < 0 && Direction == Direction.Left)
                     {
                         newLocation.X = Map.Width - 1 - Location.Y;
                         newLocation.Y = Map.Width - 1;
-                        Direction = Direction.Up;
+                        newDirection = Direction.Up;
                     }
                 }
 
+                // Move to new location
                 Location = newLocation;
                 Face = newFace;
                 Map = newMap;
+                Direction = newDirection;
 
                 var index = Map.GetIndex(Location);
                 var nextLocation = Map.Tiles[index];
@@ -387,13 +418,13 @@ namespace _2022.Days.Day22
                     lastFace = Face;
                     lastDirection = Direction;
                 }
-
-                if (nextLocation == Tile.Wall)
+                else if (nextLocation == Tile.Wall)
                 {
                     Location = lastLocation;
-                    Face = lastFace;
                     Direction = lastDirection;
-                    break;
+                    Face = lastFace;
+                    Map = Cube.GetFace(Face);
+                    break; // Skip rest of moves, since we hit a wall
                 }
 
                 steps--;

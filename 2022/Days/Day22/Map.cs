@@ -86,18 +86,18 @@ namespace _2022.Days.Day22
         {
             if (Width != Height) return;
 
-            var ret = new Tile[Width * Width];
+            var newTiles = new Tile[Width * Width];
 
             for (var y = 0; y < Width; ++y)
             {
                 for (var x = 0; x < Width; ++x)
                 {
                     var next = clockwise ? new Point(y, Width - x - 1) : new Point(Width - y - 1, x);
-                    ret[GetIndex(new Point(x, y))] = Tiles[GetIndex(next)];
+                    newTiles[GetIndex(new Point(x, y))] = Tiles[GetIndex(next)];
                 }
             }
 
-            Tiles = ret;
+            Tiles = newTiles;
         }
     }
 

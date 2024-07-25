@@ -1,7 +1,28 @@
 ﻿using Library;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace _2022.Days.Day23
 {
+    [TestClass]
+    public class ElfTests
+    {
+
+        [TestMethod]
+        public void TestCheckingAdjacentPoints()
+        {
+            var dict = new Dictionary<Point, Elf>()
+            {
+                {new Point(3, 0), new Elf(new Point(3,0))},
+                {new Point(0, 1), new Elf(new Point(0,1))},
+            };
+
+            var e = new Elf(new Point());
+
+            Assert.IsTrue(e.CheckAdjacentPointsAreEmpty(Direction.East, dict));
+            Assert.IsFalse(e.CheckAdjacentPointsAreEmpty(Direction.South, dict));
+        }
+    }
+
     public class Elf
     {
         public Point Location { get; set; }
@@ -23,7 +44,7 @@ namespace _2022.Days.Day23
                 ElfDirection.SW => new Point(Location.X - 1, Location.Y + 1),
                 ElfDirection.W => new Point(Location.X - 1, Location.Y),
                 ElfDirection.NW => new Point(Location.X - 1, Location.Y - 1),
-                _ => throw new NotImplementedException(),
+                _ => throw new ArgumentOutOfRangeException(nameof(d), d, null)
             };
         }
 
@@ -50,7 +71,9 @@ namespace _2022.Days.Day23
                 _ => throw new ArgumentOutOfRangeException(nameof(d), d, null)
             };
 
-            return points.All(point => !elves.ContainsKey(point));
+            var res = points.All(point => !elves.ContainsKey(point));
+            points.Clear();
+            return res;
         }
 
         public void Move(Direction d)

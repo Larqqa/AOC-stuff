@@ -7,6 +7,7 @@ using _2022.Days.Day21;
 using _2022.Days.Day22;
 using _2022.Days.Day23;
 using _2022.Days.Day24;
+using _2022.Days.Day25;
 
 //Day16.Run();
 //Day17.Run();
@@ -16,4 +17,5 @@ using _2022.Days.Day24;
 //Day21.Run();
 //Day22.Run();
 //Day23.Run();
-Day24.Run();
+//Day24.Run();
+Day25.Run();

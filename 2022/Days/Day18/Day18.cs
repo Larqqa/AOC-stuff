@@ -117,7 +117,7 @@ namespace _2022.Days.Day18
                 {
                     var n = p.Add(neighbor);
 
-                    if (n.OutOfBounds(size, size, size)) continue;
+                    if (n.OutOfBounds(new Point(size - 1))) continue;
 
                     var nv = cube[n.Z][n.ToIndex(size)];
                     if (nv == rock)

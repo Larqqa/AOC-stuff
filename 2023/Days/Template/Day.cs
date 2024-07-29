@@ -1,32 +1,35 @@
 ﻿using Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace _2023.Days.Day
+namespace _2023.Days.Template;
+
+[TestClass]
+public class DayTests
 {
-    [TestClass]
-    public class DayTests
+    [TestMethod]
+    public void Test()
     {
-        [TestMethod]
-        public void Test()
-        {
-            Assert.IsTrue(true);
-        }
+        Assert.IsTrue(true);
+    }
+}
+
+public class Day
+{
+    public static void Run()
+    {
+        Console.WriteLine("---Day 00---");
+        Operation();
+        Console.WriteLine("------------");
     }
 
-    public class Day
+    public static void Operation()
     {
-        public static void Run()
-        {
-            Console.WriteLine("---Day 00---");
-            var d = new Day();
-            d.Operation();
-            Console.WriteLine("------------");
-        }
+        var input = General.GetInput("./Days/Day/input.txt");
+        ParseInput(input);
+        Console.WriteLine(input);
+    }
 
-        public void Operation()
-        {
-            var input = General.GetInput(@"./Days/Day/input.txt");
-            Console.WriteLine(input);
-        }
+    public static void ParseInput(string input)
+    {
     }
 }

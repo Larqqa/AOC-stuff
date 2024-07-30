@@ -1,3 +1,3 @@
-﻿using _2023.Days.Day1;
+﻿using _2023.Days.Day01;
 
-Day1.Run();
+new Day01().Run();

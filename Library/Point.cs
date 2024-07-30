@@ -126,4 +126,6 @@ public class Point : IEquatable<Point>
         new Point( -1, 1), // Bottom left
         new Point( -1, -1), // Top left
     ];
+
+    public static readonly List<Point> NeighborPoints = AdjacentPoints.Concat(DiagonalPoints).ToList();
 }

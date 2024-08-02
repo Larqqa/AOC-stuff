@@ -2,6 +2,25 @@
 
 namespace _2023.Days.Template;
 
+/*
+[TestClass]
+public class DayTests
+{
+    [TestMethod]
+    public void TestP1()
+    {
+        var d = new Day()
+        {
+            Input = ""
+        };
+
+        d.ParseInput();
+
+        Assert.AreEqual("1", d.PartOne());
+    }
+}
+*/
+
 public abstract class Day
 {
     private readonly string _date;

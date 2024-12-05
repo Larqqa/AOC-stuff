@@ -1,6 +1,7 @@
 ﻿using _2024.Days.Template;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Text.RegularExpressions;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace _2024.Days.Day03
 {
@@ -44,27 +45,29 @@ namespace _2024.Days.Day03
             Rows = Input.Split("\r\n").ToList();
         }
 
-        public override string PartOne()
-        {
-            return Rows.Aggregate(0, (sum, row) =>
-            {
-                var matches = Regex.Matches(row, MatchStr);
+        public static int Mull(string str) => str.Replace("mul(", "").Replace(")", "").Split(",").Select(int.Parse).Aggregate(1, (a, b) => a * b);
 
-                return sum + matches.Aggregate(0, (agg, match) =>
-                {
-                    var str = match.Value;
-                    var res = str.Replace("mul(", "").Replace(")", "").Split(",");
-                    return agg + int.Parse(res[0]) * int.Parse(res[1]);
-                });
-            }).ToString();
-        }
+        public override string PartOne() => Rows.Aggregate(0, (sum, row) => sum + Regex.Matches(row, MatchStr).Aggregate(0, (agg, match) => agg + Mull(match.Value))).ToString();
 
         public override string PartTwo()
         {
+            var doMul = true;
             return Rows.Aggregate(0, (sum, row) =>
             {
-                var matches = Regex.Matches(row, MatchStr + @"|don't\(\)|do\(\)");
-                return sum;
+                var res = Regex
+                    .Matches(row, MatchStr + @"|don't\(\)|do\(\)")
+                    .Aggregate(0, (agg, match) =>
+                    {
+                        var str = match.Value;
+
+                        if (str is not ("do()" or "don't()"))
+                            return doMul ? agg + Mull(str) : agg;
+
+                        doMul = str is "do()";
+                        return agg;
+                    });
+
+                return sum + res;
             }).ToString();
         }
     }

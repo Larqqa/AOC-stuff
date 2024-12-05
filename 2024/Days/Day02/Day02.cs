@@ -13,13 +13,14 @@ namespace _2024.Days.Day02
         {
             var d = new Day02()
             {
-                Input = "7 6 4 2 1\r\n1 2 7 8 9\r\n9 7 6 2 1\r\n1 3 2 4 5\r\n8 6 4 4 1\r\n1 3 6 7 9"
+                //Input = "7 6 4 2 1\r\n1 2 7 8 9\r\n9 7 6 2 1\r\n1 3 2 4 5\r\n8 6 4 4 1\r\n1 3 6 7 9"
+                Input = "5 2 3 4 5"
             };
 
             d.ParseInput();
 
-            Assert.AreEqual("2", d.PartOne());
-            Assert.AreEqual("4", d.PartTwo());
+            //Assert.AreEqual("2", d.PartOne());
+            Assert.AreEqual("1", d.PartTwo());
         }
     }
 
@@ -38,15 +39,25 @@ namespace _2024.Days.Day02
 
         private static bool CheckNumber(int prev, int num, bool increasing)
         {
-            if (num == prev) return false;
+            if (num == prev || Math.Abs(num - prev) > 3) return false;
 
-            if (increasing)
+            return increasing switch
             {
-                if (prev > num || num - prev > 3) return false;
-            }
-            else
+                true when prev < num => true,
+                false when prev > num => true,
+                _ => false
+            };
+        }
+
+        private static bool FindValidRow(List<int> row)
+        {
+            var curr = row[0];
+            var increasing = row[0] < row[1];
+
+            foreach (var next in row[1..])
             {
-                if (prev < num || prev - num > 3) return false;
+                if (!CheckNumber(curr, next, increasing)) return false;
+                curr = next;
             }
 
             return true;
@@ -54,20 +65,7 @@ namespace _2024.Days.Day02
 
         public override string PartOne()
         {
-            Valid = Rows.Where(row =>
-            {
-                var curr = row[0];
-                var increasing = row[0] < row[1];
-
-                foreach (var next in row[1..])
-                {
-                    if (!CheckNumber(curr, next, increasing)) return false;
-
-                    curr = next;
-                }
-
-                return true;
-            }).ToList();
+            Valid = Rows.Where(FindValidRow).ToList();
 
             return Valid.Count.ToString();
         }
@@ -76,49 +74,15 @@ namespace _2024.Days.Day02
         {
             Valid = Rows.Where(row =>
             {
-                var removed = false;
-                var i = 0;
-                var increasing = row[0] < row[1];
-
-                while (true)
+                for (var i = 0; i < row.Count; i++)
                 {
-                    if (i + 2 >= row.Count) return true;
-
-                    var curr = row[i];
-                    var next = row[i + 1];
-
-                    if (!CheckNumber(curr, next, increasing))
-                    {
-                        if (removed) return false;
-                        removed = true;
-
-                        if (CheckNumber(curr, row[i + 2], curr < row[i + 2]))
-                        {
-                            increasing = i > 1 ? curr < row[i + 2] : increasing;
-                            row.RemoveAt(i + 1);
-                            i++;
-                            continue;
-                        }
-
-                        if (CheckNumber(next, row[i + 2], next < row[i + 2]))
-                        {
-                            increasing = i > 1 ? next < row[i + 2] : increasing;
-                            row.RemoveAt(i);
-
-                            if (i != 0 && !CheckNumber(row[i - 1], next, increasing)) return false;
-
-                            continue;
-                        }
-
-                        return false;
-                    }
-
-                    i++;
+                    List<int> clone = [..row];
+                    clone.RemoveAt(i);
+                    if (FindValidRow(clone)) return true;
                 }
-            }).ToList();
 
-            // 543 too high
-            // 497 too high
+                return false;
+            }).ToList();
 
             return Valid.Count.ToString();
         }

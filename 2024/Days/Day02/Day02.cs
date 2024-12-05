@@ -1,7 +1,5 @@
 ﻿using _2024.Days.Template;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace _2024.Days.Day02
 {
@@ -13,13 +11,12 @@ namespace _2024.Days.Day02
         {
             var d = new Day02()
             {
-                //Input = "7 6 4 2 1\r\n1 2 7 8 9\r\n9 7 6 2 1\r\n1 3 2 4 5\r\n8 6 4 4 1\r\n1 3 6 7 9"
-                Input = "5 2 3 4 5"
+                Input = "7 6 4 2 1\r\n1 2 7 8 9\r\n9 7 6 2 1\r\n1 3 2 4 5\r\n8 6 4 4 1\r\n1 3 6 7 9"
             };
 
             d.ParseInput();
 
-            //Assert.AreEqual("2", d.PartOne());
+            Assert.AreEqual("2", d.PartOne());
             Assert.AreEqual("1", d.PartTwo());
         }
     }

@@ -23,11 +23,11 @@ namespace _2022.Days.Day20
             Day20.PrintList(l);
             Console.WriteLine();
 
-            l[0].Step(Direction.Next);
+            l[0].Step(Pointer.Direction.Next);
             Day20.PrintList(l);
             Console.WriteLine();
 
-            l[0].Step(Direction.Previous);
+            l[0].Step(Pointer.Direction.Previous);
             Day20.PrintList(l);
         }
 
@@ -99,14 +99,14 @@ namespace _2022.Days.Day20
                     {
                         Value = int.Parse(x)
                     };
-                    
-                    p.SetNeighbor(Direction.Next, acc.LastOrDefault());
+
+                    p.SetNeighbor(Pointer.Direction.Next, acc.LastOrDefault());
 
                     acc.Add(p);
                     return acc;
                 });
 
-            list.First().SetNeighbor(Direction.Next, list.Last());
+            list.First().SetNeighbor(Pointer.Direction.Next, list.Last());
 
             return list;
         }
@@ -125,7 +125,7 @@ namespace _2022.Days.Day20
             {
                 if (pointer.Value == 0) continue;
 
-                var dir = pointer.Value > 0 ? Direction.Next : Direction.Previous;
+                var dir = pointer.Value > 0 ? Pointer.Direction.Next : Pointer.Direction.Previous;
                 var steps = Math.Abs(pointer.Value) % (pl.Count - 1);
 
                 for (var i = 0; i < steps; i++)

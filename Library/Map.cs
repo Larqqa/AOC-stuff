@@ -259,7 +259,7 @@ public abstract class Map<T> where T : struct, Enum
         var times = (degrees / 90) % 4;
 
         if (times == 0) return;
-        
+
         if (Math.Abs(times) == 2)
         {
             FlipMap();

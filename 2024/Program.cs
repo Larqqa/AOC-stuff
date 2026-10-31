@@ -4,11 +4,14 @@ using _2024.Days.Day03;
 using _2024.Days.Day04;
 using _2024.Days.Day05;
 using _2024.Days.Day06;
+using _2024.Days.Day07;
 
 //new Day01().Run();
 //new Day02().Run();
 //new Day03().Run();
 //new Day04().Run();
 // new Day05().Run();
-new Day06().Run();
+// new Day06().Run();
+new Day07().Run();
+
 
